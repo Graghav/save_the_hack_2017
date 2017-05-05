@@ -85,6 +85,26 @@ var createTicket = function(req, res) {
 
 }
 
+
+var createContact = function(req, res) {
+
+  console.log("CREATING A NEW CONTACT");
+
+  var contact = req.params.contact || req.body.contact;
+
+  Freshdesk.createContact(contact, function(err, data){
+    if(err) {
+      console.log("ERROR IN CREATING CONTACTS");
+      res.status(500);
+      res.send(err);
+    }
+    else {
+      res.send(data);
+    }
+  });
+
+}
+
 var getContacts = function(req, res) {
   console.log("GETTING ALL FRESHDESK CONTACTS");
 
@@ -134,5 +154,6 @@ module.exports = {
   getTicketDetails  : getTicketDetails,
   getTicketNotes    : getTicketNotes,
   getContacts       : getContacts,
-  getContactDetails : getContactDetails
+  getContactDetails : getContactDetails,
+  createContact     : createContact
 }
