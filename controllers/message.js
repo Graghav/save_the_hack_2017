@@ -21,6 +21,25 @@ var createMessage = function(req, res) {
   }
 }
 
+var getAllMessagesCount = function(req, res) {
+
+
+  Message.find({}, function(err, messages){
+    if(err) {
+      res.status(500);
+      res.send({ message: err });
+    }
+    else {
+      // GROUP THE MESSAGES BY CUSTOMER ID
+      var data = _.groupBy(messages, function(m){
+        return m.customer_id;
+      });
+      res.send(data);
+    }
+  });
+
+}
+
 var getCustomerMessages = function(req, res) {
 
   var customer_id = req.params.id || req.body.id;
@@ -38,6 +57,7 @@ var getCustomerMessages = function(req, res) {
 }
 
 module.exports = {
-  createMessage : createMessage,
-  getCustomerMessages : getCustomerMessages
+  createMessage       : createMessage,
+  getCustomerMessages : getCustomerMessages,
+  getAllMessagesCount : getAllMessagesCount
 }
