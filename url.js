@@ -1,9 +1,13 @@
 "use strict";
 
 const freshdesk = require('./controllers/freshdesk');
+const stats			=	require('./controllers/stats');
 const message   = require('./controllers/message');
 
 module.exports = function(app) {
+
+	// Dashboard Routes
+	app.get('/stats', stats.getStats);
 
   // Ticket Routes
 	app.get('/tickets', freshdesk.getAllTickets);
