@@ -34,6 +34,15 @@ var getAllMessagesCount = function(req, res) {
       var data = _.groupBy(messages, function(m){
         return m.customer_id;
       });
+
+      data = _.map(data, function(d, cid){
+          return {
+            customer_id : cid,
+            messages    : d,
+            message_count: d.length
+          }
+      });
+
       res.send(data);
     }
   });

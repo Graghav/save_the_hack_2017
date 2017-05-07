@@ -17,6 +17,7 @@ module.exports = function(app) {
 
   // Message Routes
   app.post('/messages', message.createMessage);
+	app.get('/messages', message.getAllMessagesCount);
 
   // Contact Routes
   app.get('/contacts', freshdesk.getContacts);

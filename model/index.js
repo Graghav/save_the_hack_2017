@@ -15,13 +15,14 @@ const messageSchema = new Schema({
   verified_by   : String,
   gen_message   : String,
   message       : String,
+  sent_by       : { type: String, default: "RESPONDER" },
   created_at    : { type: Date, required: true, default: Date.now },
   updated_at    : { type: Date, required: true, default: Date.now }
 })
 
 // Hook to update `updated_at`
 messageSchema.pre('save', function(next){
-  now = new Date();
+  let now = new Date();
   this.updated_at = now;
   if ( !this.created_at ) {
     this.created_at = now;
