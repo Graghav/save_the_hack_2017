@@ -1,6 +1,24 @@
 from chatterbot.trainers import ListTrainer
 from chatterbot import ChatBot
 
+import logging
+
+import requests
+
+import json
+
+from random import randint
+
+from flask import Flask, render_template
+
+from flask_ask import Ask, statement, question, session
+
+app = Flask(__name__)
+
+ask = Ask(app, "/")
+
+logging.getLogger("flask_ask").setLevel(logging.DEBUG)
+
 
 chatterbot = ChatBot("Save the Hacker")
 chatterbot.set_trainer(ListTrainer)
@@ -66,7 +84,48 @@ chatterbot.train([
     "The cold air blow out during a cooling operation reduces the temperature of the room air and sometimes generates a mist."
 ])
 
-# Get a response to the input text
-response = chatterbot.get_response('not getting switched on')
-print(response.confidence)
-print(response)
+
+# ALEXA ROUTES
+
+@ask.launch
+def new_request():
+    return question("Welcome to Customer Care. How can I help you")
+
+@ask.intent("CatchAllIntent", mapping={'input': 'CatchAll'})
+def mindbot(input):
+
+    # Inser User question
+    data = {'customer_id': 22003757346, responder_id  : 22001367627, is_auto_gen: 'false', message: input , sent_by : 'CUSTOMER'}
+    headers = {'Content-Type': 'application/json'}
+    res = requests.post('http://localhost:5000/messages', data=json.dumps(data), headers=headers)
+
+
+    # Get a response to the input text
+    response = chatterbot.get_response(input)
+    print(response.confidence)
+
+    if(response.confidence >= 0.8):
+        print(response)
+        # Push response to backend
+        data = {'customer_id': 22003757346, responder_id  : 22001367627, is_auto_gen: 'true', message: response , sent_by : 'RESPONDER'}
+        headers = {'Content-Type': 'application/json'}
+        res = requests.post('http://localhost:5000/messages', data=json.dumps(data), headers=headers)
+    return question(input)
+
+@app.route("/whatsapp",  methods=['POST'])
+def message():
+    message = request.form['message']
+
+    # Inser User question
+    data = {'customer_id': 22003757346, responder_id  : 22001367627, is_auto_gen: 'false', message: input , sent_by : 'CUSTOMER'}
+    headers = {'Content-Type': 'application/json'}
+    res = requests.post('http://localhost:5000/messages', data=json.dumps(data), headers=headers)
+
+
+@ask.intent("StopIntent")
+def answer():
+    return statement("Thank you. Have a Nice Day!")
+
+if __name__ == '__main__':
+
+    app.run(debug=True, port=6000)
